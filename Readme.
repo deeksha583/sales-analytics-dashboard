@@ -1,0 +1,282 @@
+ 📊 Sales Analytics Dashboard
+
+> An interactive, client-side sales analytics dashboard built with HTML, CSS & Chart.js — visualizing FY 2023 sales performance across channels, regions, products, and warehouses.
+
+---
+
+## 🖼️ Preview
+
+![Dashboard Preview](assets/screenshots/dashboard-preview.png)
+![Charts Preview](assets/screenshots/charts-preview.png)
+
+---
+
+## 🗂️ Table of Contents
+
+- [Overview](#overview)
+- [Objectives](#objectives)
+- [Data](#data)
+- [Variables](#variables)
+- [Methodology](#methodology)
+- [Tools & Techniques](#tools--techniques)
+- [Key Insights](#key-insights)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Conclusion](#conclusion)
+
+---
+
+## Overview
+
+The **Sales Analytics Dashboard** is a fully self-contained, single-file web application that provides a comprehensive view of a company's sales performance for fiscal year 2023. It renders multiple interactive charts covering revenue trends, channel distribution, regional breakdown, product performance, warehouse efficiency, and customer spend — all without any backend or build process required.
+
+---
+
+## Objectives
+
+1. Consolidate key sales metrics into a single, accessible interface.
+2. Visualize monthly revenue and order volume trends over 12 months.
+3. Compare sales performance across channels — Online, Wholesale, Distributor, Export.
+4. Identify top-performing products, regions, and customers.
+5. Evaluate warehouse fulfillment efficiency across all locations.
+6. Support data-driven decisions through actionable quick-prompt buttons.
+
+---
+
+## Data
+
+| Attribute       | Details                                        |
+|-----------------|------------------------------------------------|
+| **Source**      | Simulated FY 2023 internal sales records       |
+| **Time Period** | January 2023 – December 2023 (12 months)       |
+| **Scope**       | All channels · All warehouses · All regions    |
+| **Format**      | JavaScript arrays embedded in HTML             |
+| **Orders**      | 3,847 total orders across 924 unique customers |
+
+### Monthly Revenue Data ($K)
+
+| Month | Revenue ($K) | Orders |
+|-------|-------------|--------|
+| Jan   | 298         | 241    |
+| Feb   | 312         | 258    |
+| Mar   | 345         | 289    |
+| Apr   | 389         | 312    |
+| May   | 401         | 334    |
+| Jun   | 378         | 301    |
+| Jul   | 415         | 348    |
+| Aug   | 442         | 371    |
+| Sep   | 398         | 322    |
+| Oct   | 467         | 389    |
+| Nov   | 512         | 421    |
+| Dec   | 465         | 361    |
+| **Total** | **$4,822K** | **3,847** |
+
+### Sales by Channel
+
+| Channel     | Share (%) | Est. Revenue |
+|-------------|-----------|--------------|
+| Online      | 38%       | ~$1,832K     |
+| Wholesale   | 29%       | ~$1,398K     |
+| Distributor | 21%       | ~$1,013K     |
+| Export      | 12%       | ~$579K       |
+
+### Sales by Region
+
+| Region        | Revenue ($) |
+|---------------|-------------|
+| North America | $1,842,000  |
+| Europe        | $1,231,000  |
+| Asia-Pacific  | $897,000    |
+| Latin America | $512,000    |
+| Middle East   | $338,000    |
+
+### Top 8 Products by Revenue
+
+| Rank | Product      | Revenue ($K) |
+|------|--------------|--------------|
+| 1    | Widget Pro   | $624K        |
+| 2    | SolarPanel X2| $589K        |
+| 3    | DataSync Hub | $512K        |
+| 4    | EcoBottle Set| $478K        |
+| 5    | ThermoKit    | $421K        |
+| 6    | SmartSeal    | $389K        |
+| 7    | PowerPack    | $356K        |
+| 8    | AirFilter+   | $312K        |
+
+### Unit Price vs Profit Margin (Bubble Chart Data)
+
+| Product   | Unit Price ($) | Margin (%) | Qty Sold (bubble size) |
+|-----------|---------------|------------|------------------------|
+| Product 1 | 45            | 28%        | 12                     |
+| Product 2 | 89            | 38%        | 18                     |
+| Product 3 | 120           | 42%        | 14                     |
+| Product 4 | 34            | 22%        | 9                      |
+| Product 5 | 67            | 35%        | 11                     |
+| Product 6 | 156           | 47%        | 16                     |
+| Product 7 | 78            | 31%        | 8                      |
+| Product 8 | 210           | 52%        | 13                     |
+
+### Currency Split
+
+| Currency | Share (%) |
+|----------|-----------|
+| USD      | 52%       |
+| EUR      | 24%       |
+| GBP      | 11%       |
+| AUD      | 8%        |
+| Other    | 5%        |
+
+### Warehouse Fulfillment Time
+
+| Warehouse | Avg Days | Status  |
+|-----------|----------|---------|
+| WH-01     | 1.8 days | ✅ Fast  |
+| WH-02     | 2.1 days | ✅ Fast  |
+| WH-03     | 2.4 days | ⚠️ Avg  |
+| WH-04     | 3.2 days | ⚠️ Slow |
+| WH-05     | 3.9 days | ❌ Slow  |
+
+### Top 6 Customers by Total Spend
+
+| Customer  | Total Spend ($K) |
+|-----------|-----------------|
+| Cust-142  | $312K           |
+| Cust-089  | $289K           |
+| Cust-203  | $241K           |
+| Cust-317  | $198K           |
+| Cust-056  | $187K           |
+| Cust-198  | $172K           |
+
+---
+
+## Variables
+
+### KPI Summary Metrics
+
+| Variable           | Value     | Change vs Prior Year |
+|--------------------|-----------|----------------------|
+| Total Sales        | $4.82M    | +12.4%               |
+| Total Orders       | 3,847     | +8.1%                |
+| Avg Unit Price     | $68.40    | Across all SKUs      |
+| Gross Margin       | 38.2%     | +2.1pp               |
+| Unique Customers   | 924       | +63 new              |
+| Avg Ship Delay     | 2.3 days  | −0.4d improvement    |
+
+### JavaScript Variables in Code
+
+```javascript
+const months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const revenue = [298, 312, 345, 389, 401, 378, 415, 442, 398, 467, 512, 465];
+const orders  = [241, 258, 289, 312, 334, 301, 348, 371, 322, 389, 421, 361];
+```
+
+---
+
+## Methodology
+
+1. **Data Structuring** — Sales data organized into flat arrays by month, channel, region, product, and customer.
+2. **KPI Derivation** — Summary metrics (margin, avg price, ship delay) pre-aggregated as static display values.
+3. **Visual Encoding** — Each dimension mapped to the most appropriate chart type.
+4. **Dual-Axis Design** — Monthly trend chart uses dual Y-axis to overlay revenue ($K) and order count.
+5. **Color Coding** — Consistent 5-color palette across all charts:
+   - `#378ADD` — Blue (Online / Revenue)
+   - `#1D9E75` — Green (Wholesale / Fast)
+   - `#EF9F27` — Amber (Distributor / Warning)
+   - `#D4537E` — Rose (Export)
+   - `#7F77DD` — Violet (Customers)
+6. **Conditional Colors** — Warehouse bars colored green/amber/red based on fulfillment speed.
+
+---
+
+## Tools & Techniques
+
+| Tool / Library       | Version | Purpose                                   |
+|----------------------|---------|-------------------------------------------|
+| HTML5                | —       | Structure and layout                      |
+| CSS3                 | —       | Styling, grid layout, responsive design   |
+| JavaScript ES6       | —       | Data binding and chart initialization     |
+| Chart.js             | 4.4.1   | All chart rendering                       |
+| CSS Variables        | —       | Theming and design token consistency      |
+| CSS Grid             | —       | Responsive multi-column card layouts      |
+| ARIA Labels          | —       | Accessibility for screen readers          |
+
+**Chart types used:**
+- Line chart (dual axis) — Monthly revenue & orders
+- Doughnut chart — Sales by channel
+- Horizontal bar chart — Region, products, customers
+- Bubble chart — Price vs margin vs quantity
+- Pie chart — Currency split
+- Bar chart — Warehouse fulfillment time
+
+---
+
+## Key Insights
+
+- 📈 **Revenue peaked in November** at $512K — strong Q4 seasonality.
+- 🛒 **Online is the top channel** at 38% of total sales (~$1.83M).
+- 🌍 **North America leads** regionally at $1.84M (38% of total).
+- 🏆 **Widget Pro** is the top product at $624K revenue.
+- 💰 **Higher unit price = better margin** — products above $150 show 47–52% margins.
+- 🏭 **WH-01 is fastest** at 1.8 days; **WH-05 needs improvement** at 3.9 days.
+- 👤 **Top 6 customers** account for ~$1.4M (29% of total revenue).
+- 💵 **USD dominates** at 52% of order value — EUR (24%) and GBP (11%) are secondary.
+
+---
+
+## Project Structure
+
+```
+sales-analytics-dashboard/
+│
+├── index.html                          ← Main dashboard (single-file app)
+├── README.md                           ← This file
+│
+├── assets/
+│   ├── screenshots/
+│   │   ├── dashboard-preview.png       ← Full dashboard screenshot
+│   │   └── charts-preview.png          ← Charts section screenshot
+│   └── data/
+│       └── sales_data_fy2023.csv       ← Raw data (optional export)
+│
+└── docs/
+    └── insights-report.pdf             ← Summary report (optional)
+```
+
+---
+
+## Getting Started
+
+### Run Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/sales-analytics-dashboard.git
+
+# Open in browser — no server or install needed
+cd sales-analytics-dashboard
+open index.html
+```
+
+### Deploy to GitHub Pages
+
+1. Go to **Settings → Pages** in your repository
+2. Set Source to `main` branch, `/ (root)`
+3. Your dashboard will be live at:
+   `https://your-username.github.io/sales-analytics-dashboard/`
+
+---
+
+## Conclusion
+
+This Sales Analytics Dashboard delivers executive-level business intelligence in a zero-dependency, single-file format. Built with Chart.js and pure HTML/CSS/JS, it visualizes 12 months of FY 2023 sales data across 8 chart types — covering $4.82M in revenue, 3,847 orders, 924 customers, 8 products, 5 regions, 5 warehouses, and 4 sales channels.
+
+**Planned improvements:**
+- [ ] CSV/JSON file upload for live data
+- [ ] Date range picker for custom periods
+- [ ] Export to PDF / PNG
+- [ ] Dark mode toggle
+- [ ] Drill-down views per channel or product
+
+---
+
+*Built with HTML · CSS · JavaScript · Chart.js 4.4.1*
