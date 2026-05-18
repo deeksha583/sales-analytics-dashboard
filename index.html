@@ -1,241 +1,300 @@
-<h2 class="sr-only">Sales Analytics Dashboard showing key metrics, trends, channel performance, and product insights</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Analytics Dashboard - FY 2023</title>
+  <style>
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+      --color-text-primary: #0d1117;
+      --color-text-secondary: #656d76;
+      --color-text-tertiary: #8b949e;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f6f8fa;
+      --color-border-secondary: #d0d7de;
+      --color-border-tertiary: #d8dee4;
+      --border-radius-md: 6px;
+      --border-radius-lg: 8px;
+    }
 
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.dash { padding: 1rem 0; }
-.section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
-.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
-.metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-.metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
-.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.charts-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.chart-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; }
-.chart-card-full { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; margin-bottom: 14px; }
-.chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
-.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; font-size: 11px; color: var(--color-text-secondary); }
-.legend span { display: flex; align-items: center; gap: 4px; }
-.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
-.tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-.tab { font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
-.tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); font-weight: 500; }
-</style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-text-primary: #e6edf3;
+        --color-text-secondary: #8b949e;
+        --color-text-tertiary: #6e7681;
+        --color-background-primary: #0d1117;
+        --color-background-secondary: #161b22;
+        --color-border-secondary: #30363d;
+        --color-border-tertiary: #21262d;
+      }
+    }
 
-<div class="dash">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-    <div>
-      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">Sales analytics</div>
-      <div style="font-size:12px;color:var(--color-text-secondary);">FY 2023 · All channels · All warehouses</div>
-    </div>
-    <div style="display:flex;gap:6px;">
-      <select id="yearFilter" style="font-size:12px;">
-        <option>All years</option><option>2023</option><option>2022</option><option>2021</option>
-      </select>
-      <select id="channelFilter" style="font-size:12px;">
-        <option>All channels</option><option>Online</option><option>Wholesale</option><option>Distributor</option><option>Export</option>
-      </select>
-    </div>
-  </div>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--color-background-secondary); color: var(--color-text-primary); padding: 24px; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .dash { padding: 1rem 0; }
+    .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .metric { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); }
+    .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+    .metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+    .metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .charts-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .chart-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; }
+    .chart-card-full { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; margin-bottom: 14px; }
+    .chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; font-size: 11px; color: var(--color-text-secondary); }
+    .legend span { display: flex; align-items: center; gap: 4px; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab { font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.2s; }
+    .tab:hover { background: var(--color-background-secondary); border-color: var(--color-border-secondary); }
+    .tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); font-weight: 500; }
+    select { padding: 6px 10px; font-size: 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-primary); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
 
-  <div class="metric-grid">
-    <div class="metric"><div class="metric-label">Total sales</div><div class="metric-value">$4.82M</div><div class="metric-sub">+12.4% vs prior year</div></div>
-    <div class="metric"><div class="metric-label">Total orders</div><div class="metric-value">3,847</div><div class="metric-sub">+8.1% vs prior year</div></div>
-    <div class="metric"><div class="metric-label">Avg unit price</div><div class="metric-value">$68.40</div><div class="metric-sub">Across all SKUs</div></div>
-    <div class="metric"><div class="metric-label">Gross margin</div><div class="metric-value">38.2%</div><div class="metric-sub">+2.1pp vs prior year</div></div>
-    <div class="metric"><div class="metric-label">Unique customers</div><div class="metric-value">924</div><div class="metric-sub">+63 new this year</div></div>
-    <div class="metric"><div class="metric-label">Avg ship delay</div><div class="metric-value">2.3 days</div><div class="metric-sub">−0.4d improvement</div></div>
-  </div>
+    @media (max-width: 768px) {
+      .charts-row { grid-template-columns: 1fr; }
+      .charts-row-3 { grid-template-columns: 1fr; }
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="sr-only">Sales Analytics Dashboard showing key metrics, trends, channel performance, and product insights</h2>
 
-  <div class="chart-card-full">
-    <div class="chart-title">Monthly sales revenue &amp; order volume</div>
-    <div class="legend">
-      <span><span class="legend-dot" style="background:#378ADD;"></span>Revenue ($K)</span>
-      <span><span class="legend-dot" style="background:#1D9E75;border-radius:50%;"></span>Orders (count)</span>
-    </div>
-    <div style="position:relative;height:220px;"><canvas id="trendChart" role="img" aria-label="Line chart of monthly sales revenue and order volume over 12 months">Monthly revenue peaks in Q4 and order volume follows similar pattern.</canvas></div>
-  </div>
-
-  <div class="charts-row">
-    <div class="chart-card">
-      <div class="chart-title">Sales by channel</div>
-      <div class="legend">
-        <span><span class="legend-dot" style="background:#378ADD;"></span>Online 38%</span>
-        <span><span class="legend-dot" style="background:#1D9E75;"></span>Wholesale 29%</span>
-        <span><span class="legend-dot" style="background:#EF9F27;"></span>Distributor 21%</span>
-        <span><span class="legend-dot" style="background:#D4537E;"></span>Export 12%</span>
+    <div class="dash">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">Sales analytics</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);">FY 2023 · All channels · All warehouses</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <select id="yearFilter" style="font-size:12px;">
+            <option>All years</option><option>2023</option><option>2022</option><option>2021</option>
+          </select>
+          <select id="channelFilter" style="font-size:12px;">
+            <option>All channels</option><option>Online</option><option>Wholesale</option><option>Distributor</option><option>Export</option>
+          </select>
+        </div>
       </div>
-      <div style="position:relative;height:180px;"><canvas id="channelChart" role="img" aria-label="Donut chart showing sales distribution by channel">Online leads at 38%, followed by Wholesale 29%, Distributor 21%, Export 12%.</canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Sales by delivery region</div>
-      <div style="position:relative;height:210px;"><canvas id="regionChart" role="img" aria-label="Horizontal bar chart of sales by delivery region">North America leads, followed by Europe, Asia-Pacific, Latin America, and Middle East.</canvas></div>
+
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-label">Total sales</div><div class="metric-value">$4.82M</div><div class="metric-sub">+12.4% vs prior year</div></div>
+        <div class="metric"><div class="metric-label">Total orders</div><div class="metric-value">3,847</div><div class="metric-sub">+8.1% vs prior year</div></div>
+        <div class="metric"><div class="metric-label">Avg unit price</div><div class="metric-value">$68.40</div><div class="metric-sub">Across all SKUs</div></div>
+        <div class="metric"><div class="metric-label">Gross margin</div><div class="metric-value">38.2%</div><div class="metric-sub">+2.1pp vs prior year</div></div>
+        <div class="metric"><div class="metric-label">Unique customers</div><div class="metric-value">924</div><div class="metric-sub">+63 new this year</div></div>
+        <div class="metric"><div class="metric-label">Avg ship delay</div><div class="metric-value">2.3 days</div><div class="metric-sub">−0.4d improvement</div></div>
+      </div>
+
+      <div class="chart-card-full">
+        <div class="chart-title">Monthly sales revenue & order volume</div>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#378ADD;"></span>Revenue ($K)</span>
+          <span><span class="legend-dot" style="background:#1D9E75;border-radius:50%;"></span>Orders (count)</span>
+        </div>
+        <div style="position:relative;height:220px;"><canvas id="trendChart" role="img" aria-label="Line chart of monthly sales revenue and order volume over 12 months">Monthly revenue peaks in Q4 and follows seasonal trends</canvas></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Sales by channel</div>
+          <div class="legend">
+            <span><span class="legend-dot" style="background:#378ADD;"></span>Online 38%</span>
+            <span><span class="legend-dot" style="background:#1D9E75;"></span>Wholesale 29%</span>
+            <span><span class="legend-dot" style="background:#EF9F27;"></span>Distributor 21%</span>
+            <span><span class="legend-dot" style="background:#D4537E;"></span>Export 12%</span>
+          </div>
+          <div style="position:relative;height:180px;"><canvas id="channelChart" role="img" aria-label="Donut chart showing sales distribution by channel">Online leads at 38%, followed by Wholesale 29%</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Sales by delivery region</div>
+          <div style="position:relative;height:210px;"><canvas id="regionChart" role="img" aria-label="Horizontal bar chart of sales by delivery region">North America leads, followed by Europe, Asia-Pacific, Latin America, and Middle East</canvas></div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Top 8 products by revenue</div>
+          <div style="position:relative;height:280px;"><canvas id="productChart" role="img" aria-label="Horizontal bar chart of top 8 products by revenue">Product A leads revenue, followed by Products B through H</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Unit price vs profit margin by product</div>
+          <div style="position:relative;height:280px;"><canvas id="bubbleChart" role="img" aria-label="Bubble chart of unit price versus profit margin with bubble size representing quantity sold">Higher-priced products tend to have higher profit margins</canvas></div>
+        </div>
+      </div>
+
+      <div class="charts-row-3">
+        <div class="chart-card">
+          <div class="chart-title">Currency split (by order value)</div>
+          <div style="position:relative;height:170px;"><canvas id="currencyChart" role="img" aria-label="Pie chart of order value by currency">USD dominates at 52%, followed by EUR, GBP, AUD, and other currencies</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Warehouse order fulfillment time</div>
+          <div style="position:relative;height:170px;"><canvas id="warehouseChart" role="img" aria-label="Bar chart of average fulfillment days by warehouse">WH-01 is fastest at 1.8 days; WH-05 slowest at 3.9 days</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top customers by total spend</div>
+          <div style="position:relative;height:170px;"><canvas id="custChart" role="img" aria-label="Horizontal bar chart of top 6 customers by total spend">Customer 142 leads with $312K in total spend</canvas></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="sendPrompt('Break down sales trends by quarter and identify seasonal patterns')">Seasonal analysis ↗</button>
+        <button class="tab" onclick="sendPrompt('Which products have the highest profit margin and what pricing strategy should we use?')">Pricing strategy ↗</button>
+        <button class="tab" onclick="sendPrompt('Identify the top 10 customers and recommend retention strategies for them')">Customer retention ↗</button>
+        <button class="tab" onclick="sendPrompt('Compare warehouse efficiency and suggest improvements for underperforming warehouses')">Warehouse efficiency ↗</button>
+        <button class="tab" onclick="sendPrompt('Analyze regional sales performance and recommend where to focus marketing spend')">Regional focus ↗</button>
+      </div>
     </div>
   </div>
 
-  <div class="charts-row">
-    <div class="chart-card">
-      <div class="chart-title">Top 8 products by revenue</div>
-      <div style="position:relative;height:280px;"><canvas id="productChart" role="img" aria-label="Horizontal bar chart of top 8 products by revenue">Product A leads revenue, followed by Products B through H.</canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Unit price vs profit margin by product</div>
-      <div style="position:relative;height:280px;"><canvas id="bubbleChart" role="img" aria-label="Bubble chart of unit price versus profit margin with bubble size representing quantity sold">Higher-priced products tend to show better margins in premium segments.</canvas></div>
-    </div>
-  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const revenue = [298,312,345,389,401,378,415,442,398,467,512,465];
+    const orders = [241,258,289,312,334,301,348,371,322,389,421,361];
 
-  <div class="charts-row-3">
-    <div class="chart-card">
-      <div class="chart-title">Currency split (by order value)</div>
-      <div style="position:relative;height:170px;"><canvas id="currencyChart" role="img" aria-label="Pie chart of order value by currency">USD dominates at 52%, followed by EUR, GBP, AUD, and others.</canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Warehouse order fulfillment time</div>
-      <div style="position:relative;height:170px;"><canvas id="warehouseChart" role="img" aria-label="Bar chart of average fulfillment days by warehouse">WH-01 is fastest at 1.8 days; WH-05 slowest at 3.9 days.</canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Top customers by total spend</div>
-      <div style="position:relative;height:170px;"><canvas id="custChart" role="img" aria-label="Horizontal bar chart of top 6 customers by total spend">Customer 142 leads with $312K in total spend.</canvas></div>
-    </div>
-  </div>
+    // Trend Chart
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          { label: 'Revenue ($K)', data: revenue, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.08)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y1' },
+          { label: 'Orders', data: orders, borderColor: '#1D9E75', backgroundColor: 'transparent', borderDash: [4,3], tension: 0.4, pointRadius: 3, yAxisID: 'y2' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 } } },
+          y1: { position: 'left', grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+v+'K' } },
+          y2: { position: 'right', grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
 
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
-    <button class="tab active" onclick="sendPrompt('Break down sales trends by quarter and identify seasonal patterns')">Seasonal analysis ↗</button>
-    <button class="tab" onclick="sendPrompt('Which products have the highest profit margin and what pricing strategy should we use?')">Pricing strategy ↗</button>
-    <button class="tab" onclick="sendPrompt('Identify the top 10 customers and recommend retention strategies for them')">Customer retention ↗</button>
-    <button class="tab" onclick="sendPrompt('Compare warehouse efficiency and suggest improvements for underperforming warehouses')">Warehouse efficiency ↗</button>
-    <button class="tab" onclick="sendPrompt('Analyze regional sales performance and recommend where to focus marketing spend')">Regional focus ↗</button>
-  </div>
-</div>
+    // Channel Chart
+    new Chart(document.getElementById('channelChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Online','Wholesale','Distributor','Export'],
+        datasets: [{ data: [38,29,21,12], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E'], borderWidth: 2, borderColor: 'white' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '60%' }
+    });
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const revenue = [298,312,345,389,401,378,415,442,398,467,512,465];
-const orders = [241,258,289,312,334,301,348,371,322,389,421,361];
+    // Region Chart
+    new Chart(document.getElementById('regionChart'), {
+      type: 'bar',
+      data: {
+        labels: ['North America','Europe','Asia-Pacific','Latin America','Middle East'],
+        datasets: [{ data: [1842,1231,897,512,338], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E','#7F77DD'], borderRadius: 4 }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+Math.round(v/1000)+'K' } },
+          y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
 
-new Chart(document.getElementById('trendChart'), {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      { label: 'Revenue ($K)', data: revenue, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.08)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y1' },
-      { label: 'Orders', data: orders, borderColor: '#1D9E75', backgroundColor: 'transparent', borderDash: [4,3], tension: 0.4, pointRadius: 3, yAxisID: 'y2' }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 } } },
-      y1: { position: 'left', grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+v+'K' } },
-      y2: { position: 'right', grid: { display: false }, ticks: { font: { size: 11 } } }
+    // Product Chart
+    new Chart(document.getElementById('productChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Widget Pro','SolarPanel X2','DataSync Hub','EcoBottle Set','ThermoKit','SmartSeal','PowerPack','AirFilter+'],
+        datasets: [{ data: [624,589,512,478,421,389,356,312], backgroundColor: '#378ADD', borderRadius: 3 }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+v+'K' } },
+          y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+
+    // Bubble Chart
+    new Chart(document.getElementById('bubbleChart'), {
+      type: 'bubble',
+      data: {
+        datasets: [{
+          label: 'Products',
+          data: [
+            {x:45,y:28,r:12},{x:89,y:38,r:18},{x:120,y:42,r:14},{x:34,y:22,r:9},
+            {x:67,y:35,r:11},{x:156,y:47,r:16},{x:78,y:31,r:8},{x:210,y:52,r:13}
+          ],
+          backgroundColor: 'rgba(55,138,221,0.5)', borderColor: '#378ADD', borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { min: 20, max: 230, grid: { color: 'rgba(128,128,128,0.1)' }, title: { display: true, text: 'Unit price ($)', font: { size: 11 } }, ticks: { font: { size: 11 } } },
+          y: { min: 15, max: 60, grid: { color: 'rgba(128,128,128,0.1)' }, title: { display: true, text: 'Margin (%)', font: { size: 11 } }, ticks: { font: { size: 11 }, callback: v => v+'%' } }
+        }
+      }
+    });
+
+    // Currency Chart
+    new Chart(document.getElementById('currencyChart'), {
+      type: 'pie',
+      data: {
+        labels: ['USD 52%','EUR 24%','GBP 11%','AUD 8%','Other 5%'],
+        datasets: [{ data: [52,24,11,8,5], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E','#888780'], borderWidth: 2, borderColor: 'white' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10 } } } }
+    });
+
+    // Warehouse Chart
+    new Chart(document.getElementById('warehouseChart'), {
+      type: 'bar',
+      data: {
+        labels: ['WH-01','WH-02','WH-03','WH-04','WH-05'],
+        datasets: [{ data: [1.8,2.1,2.4,3.2,3.9], backgroundColor: ['#1D9E75','#1D9E75','#EF9F27','#EF9F27','#E24B4A'], borderRadius: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => v+'d' }, max: 5 }
+        }
+      }
+    });
+
+    // Customer Chart
+    new Chart(document.getElementById('custChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Cust-142','Cust-089','Cust-203','Cust-317','Cust-056','Cust-198'],
+        datasets: [{ data: [312,289,241,198,187,172], backgroundColor: '#7F77DD', borderRadius: 3 }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, callback: v => '$'+v+'K' } },
+          y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+
+    function sendPrompt(message) {
+      console.log('Prompt:', message);
+      alert('Feature ready: ' + message);
     }
-  }
-});
-
-new Chart(document.getElementById('channelChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Online','Wholesale','Distributor','Export'],
-    datasets: [{ data: [38,29,21,12], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E'], borderWidth: 2, borderColor: 'transparent' }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '60%' }
-});
-
-new Chart(document.getElementById('regionChart'), {
-  type: 'bar',
-  data: {
-    labels: ['North America','Europe','Asia-Pacific','Latin America','Middle East'],
-    datasets: [{ data: [1842,1231,897,512,338], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E','#7F77DD'], borderRadius: 4 }]
-  },
-  options: {
-    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+Math.round(v/1000)+'K' } },
-      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-    }
-  }
-});
-
-new Chart(document.getElementById('productChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Widget Pro','SolarPanel X2','DataSync Hub','EcoBottle Set','ThermoKit','SmartSeal','PowerPack','AirFilter+'],
-    datasets: [{ data: [624,589,512,478,421,389,356,312], backgroundColor: '#378ADD', borderRadius: 3 }]
-  },
-  options: {
-    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => '$'+v+'K' } },
-      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-    }
-  }
-});
-
-new Chart(document.getElementById('bubbleChart'), {
-  type: 'bubble',
-  data: {
-    datasets: [{
-      label: 'Products',
-      data: [
-        {x:45,y:28,r:12},{x:89,y:38,r:18},{x:120,y:42,r:14},{x:34,y:22,r:9},
-        {x:67,y:35,r:11},{x:156,y:47,r:16},{x:78,y:31,r:8},{x:210,y:52,r:13}
-      ],
-      backgroundColor: 'rgba(55,138,221,0.5)', borderColor: '#378ADD', borderWidth: 1
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { min: 20, max: 230, grid: { color: 'rgba(128,128,128,0.1)' }, title: { display: true, text: 'Unit price ($)', font: { size: 11 } }, ticks: { font: { size: 11 } } },
-      y: { min: 15, max: 60, grid: { color: 'rgba(128,128,128,0.1)' }, title: { display: true, text: 'Margin (%)', font: { size: 11 } }, ticks: { font: { size: 11 }, callback: v => v+'%' } }
-    }
-  }
-});
-
-new Chart(document.getElementById('currencyChart'), {
-  type: 'pie',
-  data: {
-    labels: ['USD 52%','EUR 24%','GBP 11%','AUD 8%','Other 5%'],
-    datasets: [{ data: [52,24,11,8,5], backgroundColor: ['#378ADD','#1D9E75','#EF9F27','#D4537E','#888780'], borderWidth: 2, borderColor: 'transparent' }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10 } } } }
-});
-
-new Chart(document.getElementById('warehouseChart'), {
-  type: 'bar',
-  data: {
-    labels: ['WH-01','WH-02','WH-03','WH-04','WH-05'],
-    datasets: [{ data: [1.8,2.1,2.4,3.2,3.9], backgroundColor: ['#1D9E75','#1D9E75','#EF9F27','#EF9F27','#E24B4A'], borderRadius: 4 }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-      y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 11 }, callback: v => v+'d' }, max: 5 }
-    }
-  }
-});
-
-new Chart(document.getElementById('custChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Cust-142','Cust-089','Cust-203','Cust-317','Cust-056','Cust-198'],
-    datasets: [{ data: [312,289,241,198,187,172], backgroundColor: '#7F77DD', borderRadius: 3 }]
-  },
-  options: {
-    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, callback: v => '$'+v+'K' } },
-      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-    }
-  }
-});
-</script>
+  </script>
+</body>
+</html>
