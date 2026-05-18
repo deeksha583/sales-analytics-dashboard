@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Analytics Dashboard – FY 2023</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f5f5f4;
+      --surface:     #ffffff;
+      --surface2:    #f0efed;
+      --border:      rgba(0,0,0,0.08);
+      --border2:     rgba(0,0,0,0.14);
+      --text1:       #1a1a18;
+      --text2:       #6b6b67;
+      --text3:       #9e9d99;
+      --blue:        #378ADD;
+      --green:       #1D9E75;
+      --amber:       #EF9F27;
+      --rose:        #D4537E;
+      --violet:      #7F77DD;
+      --red:         #E24B4A;
+      --radius-sm:   6px;
+      --radius-md:   10px;
+      --radius-lg:   14px;
+      --shadow:      0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:       #1a1a18;
+        --surface:  #232320;
+        --surface2: #2c2c29;
+        --border:   rgba(255,255,255,0.08);
+        --border2:  rgba(255,255,255,0.14);
+        --text1:    #f0efe9;
+        --text2:    #9e9d99;
+        --text3:    #6b6b67;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text1);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 48px; }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .header-left h1 { font-size: 20px; font-weight: 600; color: var(--text1); }
+    .header-left p  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .header-right   { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    select {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border2);
+      background: var(--surface);
+      color: var(--text1);
+      cursor: pointer;
+      outline: none;
+    }
+    select:focus { border-color: var(--blue); }
+
+    /* ── KPI Grid ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .kpi {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .kpi-value { font-size: 24px; font-weight: 600; color: var(--text1); line-height: 1.2; }
+    .kpi-sub   { font-size: 11px; color: var(--text3); margin-top: 4px; }
+    .kpi-sub.up   { color: var(--green); }
+    .kpi-sub.down { color: var(--red); }
+
+    /* ── Chart Cards ── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text1);
+      margin-bottom: 12px;
+    }
+
+    /* ── Chart Grid Layouts ── */
+    .grid-full   { margin-bottom: 16px; }
+    .grid-2      { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .grid-3      { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 769px) and (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: var(--text2);
+    }
+    .legend span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+    .dot.circle { border-radius: 50%; }
+
+    /* ── Canvas Wrappers ── */
+    .chart-wrap { position: relative; }
+
+    /* ── Action Buttons ── */
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .action-btn {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .action-btn:hover  { background: var(--surface2); color: var(--text1); }
+    .action-btn.active { background: var(--surface2); color: var(--text1); border-color: var(--border2); font-weight: 500; }
+
+    /* ── Divider ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<main class="page" role="main">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Sales Analytics Dashboard</h1>
+      <p>FY 2023 &nbsp;·&nbsp; All channels &nbsp;·&nbsp; All warehouses</p>
+    </div>
+    <div class="header-right">
+      <select id="yearFilter" aria-label="Filter by year">
+        <option>All years</option>
+        <option>2023</option>
+        <option>2022</option>
+        <option>2021</option>
+      </select>
+      <select id="channelFilter" aria-label="Filter by channel">
+        <option>All channels</option>
+        <option>Online</option>
+        <option>Wholesale</option>
+        <option>Distributor</option>
+        <option>Export</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- ── KPI METRICS ── -->
+  <section aria-label="Key performance indicators">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Total Sales</div>
+        <div class="kpi-value">$4.82M</div>
+        <div class="kpi-sub up">↑ +12.4% vs prior year</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-value">3,847</div>
+        <div class="kpi-sub up">↑ +8.1% vs prior year</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Unit Price</div>
+        <div class="kpi-value">$68.40</div>
+        <div class="kpi-sub">Across all SKUs</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gross Margin</div>
+        <div class="kpi-value">38.2%</div>
+        <div class="kpi-sub up">↑ +2.1pp vs prior year</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Unique Customers</div>
+        <div class="kpi-value">924</div>
+        <div class="kpi-sub up">↑ +63 new this year</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Ship Delay</div>
+        <div class="kpi-value">2.3d</div>
+        <div class="kpi-sub down">↓ −0.4d improvement</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MONTHLY TREND ── -->
+  <section class="grid-full" aria-label="Monthly revenue and orders trend">
+    <div class="card">
+      <div class="card-title">Monthly Sales Revenue &amp; Order Volume</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#378ADD;"></span>Revenue ($K)</span>
+        <span><span class="dot circle" style="background:#1D9E75;"></span>Orders (count)</span>
+      </div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="trendChart"
+          role="img"
+          aria-label="Line chart: monthly revenue peaks in November at $512K; orders follow a similar pattern peaking at 421.">
+        </canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CHANNEL + REGION ── -->
+  <section class="grid-2" aria-label="Sales by channel and region">
+    <div class="card">
+      <div class="card-title">Sales by Channel</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#378ADD;"></span>Online 38%</span>
+        <span><span class="dot" style="background:#1D9E75;"></span>Wholesale 29%</span>
+        <span><span class="dot" style="background:#EF9F27;"></span>Distributor 21%</span>
+        <span><span class="dot" style="background:#D4537E;"></span>Export 12%</span>
+      </div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="channelChart"
+          role="img"
+          aria-label="Doughnut chart: Online 38%, Wholesale 29%, Distributor 21%, Export 12%.">
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sales by Delivery Region</div>
+      <div class="chart-wrap" style="height:210px;">
+        <canvas id="regionChart"
+          role="img"
+          aria-label="Horizontal bar chart: North America $1.84M leads, followed by Europe $1.23M, Asia-Pacific $897K, Latin America $512K, Middle East $338K.">
+        </canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRODUCTS + BUBBLE ── -->
+  <section class="grid-2" aria-label="Product revenue and price vs margin">
+    <div class="card">
+      <div class="card-title">Top 8 Products by Revenue</div>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="productChart"
+          role="img"
+          aria-label="Horizontal bar chart: Widget Pro leads at $624K, followed by SolarPanel X2 $589K, DataSync Hub $512K, and others.">
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Unit Price vs Profit Margin by Product</div>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="bubbleChart"
+          role="img"
+          aria-label="Bubble chart: higher-priced products show better margins. Products above $150 unit price reach 47–52% margin. Bubble size = quantity sold.">
+        </canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CURRENCY + WAREHOUSE + CUSTOMERS ── -->
+  <section class="grid-3" aria-label="Currency split, warehouse performance, top customers">
+    <div class="card">
+      <div class="card-title">Currency Split (by Order Value)</div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="currencyChart"
+          role="img"
+          aria-label="Pie chart: USD 52%, EUR 24%, GBP 11%, AUD 8%, Other 5%.">
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Warehouse Order Fulfillment Time</div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="warehouseChart"
+          role="img"
+          aria-label="Bar chart: WH-01 fastest at 1.8 days, WH-05 slowest at 3.9 days.">
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top Customers by Total Spend</div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="custChart"
+          role="img"
+          aria-label="Horizontal bar chart: Cust-142 leads at $312K, Cust-089 $289K, Cust-203 $241K.">
+        </canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUICK ACTIONS ── -->
+  <section aria-label="Quick analysis prompts">
+    <div class="section-label">Explore insights</div>
+    <div class="actions">
+      <button class="action-btn active">Seasonal analysis ↗</button>
+      <button class="action-btn">Pricing strategy ↗</button>
+      <button class="action-btn">Customer retention ↗</button>
+      <button class="action-btn">Warehouse efficiency ↗</button>
+      <button class="action-btn">Regional focus ↗</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── CHARTS SCRIPT ── -->
+<script>
+  /* ── Shared Data ── */
+  const months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const revenue = [298, 312, 345, 389, 401, 378, 415, 442, 398, 467, 512, 465];
+  const orders  = [241, 258, 289, 312, 334, 301, 348, 371, 322, 389, 421, 361];
+
+  /* ── Shared Chart Defaults ── */
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+  Chart.defaults.color = getComputedStyle(document.documentElement)
+                           .getPropertyValue('--text2').trim() || '#6b6b67';
+
+  /* ── 1. Monthly Trend (Dual Axis Line) ── */
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'Revenue ($K)',
+          data: revenue,
+          borderColor: '#378ADD',
+          backgroundColor: 'rgba(55,138,221,0.07)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+          yAxisID: 'y1'
+        },
+        {
+          label: 'Orders',
+          data: orders,
+          borderColor: '#1D9E75',
+          backgroundColor: 'transparent',
+          borderDash: [5, 4],
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 } }
+        },
+        y1: {
+          position: 'left',
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 }, callback: v => '$' + v + 'K' }
+        },
+        y2: {
+          position: 'right',
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  /* ── 2. Sales by Channel (Doughnut) ── */
+  new Chart(document.getElementById('channelChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Online', 'Wholesale', 'Distributor', 'Export'],
+      datasets: [{
+        data: [38, 29, 21, 12],
+        backgroundColor: ['#378ADD', '#1D9E75', '#EF9F27', '#D4537E'],
+        borderWidth: 2,
+        borderColor: 'transparent',
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%' }
+        }
+      }
+    }
+  });
+
+  /* ── 3. Sales by Region (Horizontal Bar) ── */
+  new Chart(document.getElementById('regionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['North America', 'Europe', 'Asia-Pacific', 'Latin America', 'Middle East'],
+      datasets: [{
+        data: [1842, 1231, 897, 512, 338],
+        backgroundColor: ['#378ADD', '#1D9E75', '#EF9F27', '#D4537E', '#7F77DD'],
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 }, callback: v => '$' + Math.round(v / 1000) + 'K' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  /* ── 4. Top 8 Products (Horizontal Bar) ── */
+  new Chart(document.getElementById('productChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Widget Pro', 'SolarPanel X2', 'DataSync Hub', 'EcoBottle Set',
+               'ThermoKit', 'SmartSeal', 'PowerPack', 'AirFilter+'],
+      datasets: [{
+        data: [624, 589, 512, 478, 421, 389, 356, 312],
+        backgroundColor: '#378ADD',
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 }, callback: v => '$' + v + 'K' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  /* ── 5. Unit Price vs Margin (Bubble) ── */
+  new Chart(document.getElementById('bubbleChart'), {
+    type: 'bubble',
+    data: {
+      datasets: [{
+        label: 'Products',
+        data: [
+          { x: 45,  y: 28, r: 12, name: 'SmartSeal'    },
+          { x: 89,  y: 38, r: 18, name: 'Widget Pro'   },
+          { x: 120, y: 42, r: 14, name: 'DataSync Hub' },
+          { x: 34,  y: 22, r: 9,  name: 'AirFilter+'   },
+          { x: 67,  y: 35, r: 11, name: 'ThermoKit'    },
+          { x: 156, y: 47, r: 16, name: 'SolarPanel X2'},
+          { x: 78,  y: 31, r: 8,  name: 'PowerPack'    },
+          { x: 210, y: 52, r: 13, name: 'EcoBottle Set'}
+        ],
+        backgroundColor: 'rgba(55,138,221,0.45)',
+        borderColor: '#378ADD',
+        borderWidth: 1.5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const d = ctx.raw;
+              return ` ${d.name}: $${d.x} price · ${d.y}% margin`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 20, max: 230,
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          title: { display: true, text: 'Unit price ($)', font: { size: 11 } },
+          ticks: { font: { size: 11 } }
+        },
+        y: {
+          min: 15, max: 60,
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          title: { display: true, text: 'Margin (%)', font: { size: 11 } },
+          ticks: { font: { size: 11 }, callback: v => v + '%' }
+        }
+      }
+    }
+  });
+
+  /* ── 6. Currency Split (Pie) ── */
+  new Chart(document.getElementById('currencyChart'), {
+    type: 'pie',
+    data: {
+      labels: ['USD 52%', 'EUR 24%', 'GBP 11%', 'AUD 8%', 'Other 5%'],
+      datasets: [{
+        data: [52, 24, 11, 8, 5],
+        backgroundColor: ['#378ADD', '#1D9E75', '#EF9F27', '#D4537E', '#888780'],
+        borderWidth: 2,
+        borderColor: 'transparent',
+        hoverOffset: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { font: { size: 11 }, boxWidth: 11, padding: 10 }
+        }
+      }
+    }
+  });
+
+  /* ── 7. Warehouse Fulfillment (Bar) ── */
+  new Chart(document.getElementById('warehouseChart'), {
+    type: 'bar',
+    data: {
+      labels: ['WH-01', 'WH-02', 'WH-03', 'WH-04', 'WH-05'],
+      datasets: [{
+        data: [1.8, 2.1, 2.4, 3.2, 3.9],
+        backgroundColor: ['#1D9E75', '#1D9E75', '#EF9F27', '#EF9F27', '#E24B4A'],
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        },
+        y: {
+          max: 5,
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 }, callback: v => v + 'd' }
+        }
+      }
+    }
+  });
+
+  /* ── 8. Top Customers (Horizontal Bar) ── */
+  new Chart(document.getElementById('custChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Cust-142', 'Cust-089', 'Cust-203', 'Cust-317', 'Cust-056', 'Cust-198'],
+      datasets: [{
+        data: [312, 289, 241, 198, 187, 172],
+        backgroundColor: '#7F77DD',
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(128,128,128,0.1)' },
+          ticks: { font: { size: 11 }, callback: v => '$' + v + 'K' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  /* ── Action button active state ── */
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
